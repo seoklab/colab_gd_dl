@@ -16,13 +16,19 @@ Below commands should be run in terminal from main directory location.<br/>
 5. Create a conda environment using a env.yml file.<br/>
 
 ```bash
-$ conda env create --file env.yml
+$ conda env create --file colab_env.yml
 ```
 
 6. Activate the conda environment.<br/>
 
 ```bash
-$ conda activate gd_dl
+$ conda activate colab_gd_dl
+```
+
+7. Install torch geometric files. (you can ignore errors) <br/>
+```bash
+$ pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cu121.html
+$ pip install torch_geometric
 ```
 
 7. Install source files (gd_dl)<br/>
