@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: galaxydock_dl
+Version: 0.1.0
+Summary: GalaxyDock-DL: Protein-Ligand Docking by Global Optimization and Neural Network Energy
+Home-page: https://github.com/seoklab/galaxydock_dl
+Author: Changsoo Lee
+Author-email: ccaa2013@snu.ac.kr
+Requires-Python: >=3.7

@@ -1,0 +1,15 @@
+data_directory        /home/ccaa2013/colab_galaxydock_dl/src/gd_dl/data
+top_type              polarh
+print_level           30
+energy_print_level    30
+fix_type              all
+weight_type           GalaxyDock2
+first_bank            rand
+ligdock_prefix        GalaxyDock
+grid_box_cntr         69.637   49.989   10.16
+grid_n_elem           61   61   61
+grid_width            0.375
+infile_pdb            /home/ccaa2013/colab_galaxydock_dl/example/output_dir/pdb_processed.pdb
+infile_ligand         /home/ccaa2013/colab_galaxydock_dl/example/output_dir/charged_ligand.mol2
+infile_pre_ML         /home/ccaa2013/colab_galaxydock_dl/example/output_dir/pre_DL.pt
+random                0
