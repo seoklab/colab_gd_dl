@@ -31,7 +31,7 @@ $ pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv
 $ pip install torch_geometric
 ```
 
-7. Install source files (gd_dl)<br/>
+8. Install source files (gd_dl)<br/>
 
 ```bash
 $ pip install -e .
