@@ -56,7 +56,7 @@ $ python scripts/run_gd_dl.py -p <path to protein receptor file(.pdb)> -l <path 
 Example for 3rsx
 
 ```bash
-$ python scripts/run_gd_dl.py -p ./example/3rsx/3rsx_protein.pdb -l example/output_dir/charged_ligand.mol2 -x 69.637 -y 49.989 -z 10.160 --out_dir example/output_dir/
+$ python scripts/run_gd_dl.py -p ./example/3rsx/3rsx_protein.pdb -l ./example/output_dir/charged_ligand.mol2 -x 69.637 -y 49.989 -z 10.160 --out_dir example/output_dir/
 ```
 
 If you want to run docking in terminal from a different directory, you can use bash command with '-d <location of main directory>' below<br/>
