@@ -6,8 +6,7 @@ import argparse
 from typing import List, Tuple, Dict
 from gd_dl.lib_pdb_mol2 import PDB
 from gd_dl.utils import str2bool
-from gd_dl.path_setting import (
-    OBABEL_PATH, GD_DL_BIN_PATH, SYBYL_FILE, RESIDUE_FILE)
+from gd_dl.path_setting import (GD_DL_BIN_PATH, SYBYL_FILE, RESIDUE_FILE)
 
 if SYBYL_FILE.exists() and RESIDUE_FILE.exists():
     print('Parameter files exist')
@@ -75,35 +74,7 @@ def extract_contacts_and_cofactors(protein_pdb, out_dir):
 
     cofactor_file_dict = {}
     if len(cofactor_dict) > 0:
-        for cofac in cofactor_dict:
-            cofactor_file = out_dir/f'{cofac}.pdb'
-            out_mol2 = cofactor_file.with_suffix('.mol2')
-            if not out_mol2.exists():
-                with open(cofactor_file, 'w') as f:
-                    f.write(cofactor_dict[cofac])
-                sp.check_call(f'{OBABEL_PATH} {str(cofactor_file)} -O {str(out_mol2)}',shell=True)
-
-                mol2_lines = out_mol2.read_text().splitlines()
-
-                with out_mol2.open('w') as f:
-                    read_check = False
-                    for line in mol2_lines:
-                        if line.startswith('@<TRIPOS>ATOM'):
-                            read_check = True
-                            f.write(f'{line}\n')
-                        elif line.startswith('@<TRIPOS>BOND'):
-                            read_check = False
-                            f.write(f'{line}\n')
-                        elif read_check:
-                            charge = line.split()[-1]
-                            new_line = '0.3000'.join(line.rsplit(charge,1))
-                            if '\n' not in new_line:
-                                new_line += '\n'
-                            f.write(new_line)
-                        else:
-                            f.write(f'{line}\n')
-
-            cofactor_file_dict[cofac] = out_mol2
+        raise Exception('Cofactors are not available in colab version')
 
     return cofactor_file_dict, contact_lines
 
@@ -140,8 +111,7 @@ def create_gd_dl_in_file(program_dir: Path,
                        grid_n_elem: Tuple[int],
                        grid_width: float,
                        out_dir: Path,
-                       random_seed: int,
-                       prep_check: bool):
+                       random_seed: int):
     receptor_pdb = process_input_status(contact_lines, out_dir)
     output_file_name = out_dir/'gd_dl.in'
     
@@ -152,11 +122,6 @@ def create_gd_dl_in_file(program_dir: Path,
     str_grid_n_elem = '   '.join(str_grid_n_elem)
     
     input_ligand_mol2 = ligand_mol2
-    if prep_check:
-        charged_ligand_mol2 = out_dir/'charged_ligand.mol2'
-        preprocess_script_path = program_dir/'scripts'/'gd2_preprocess_ligand.py'
-        sp.run(['chimera', '--nogui', str(preprocess_script_path), str(ligand_mol2), str(charged_ligand_mol2)], check=True)
-        input_ligand_mol2 = charged_ligand_mol2
     
     with output_file_name.open('w') as f:
         f.write('%-21s %s\n'%('data_directory',str(program_dir/'src'/'gd_dl'/'data')))
@@ -360,7 +325,7 @@ def create_static_files(receptor_pdb, ligand_mol2, out_dir):
     return
 
 def preprocess_for_docking(args):
-    protein_pdb, ligand_mol2, home_dir, center_coord, out_dir, i, box_size, prep = args
+    protein_pdb, ligand_mol2, home_dir, center_coord, out_dir, i, box_size = args
 
     assert home_dir.exists()
     program_dir = home_dir
@@ -381,8 +346,7 @@ def preprocess_for_docking(args):
                                       grid_n_elem=grid_n_elem,
                                       grid_width=grid_width,
                                       out_dir=out_dir,
-                                      random_seed=i,
-                                      prep_check=prep)
+                                      random_seed=i)
     create_static_files(receptor_pdb, ligand_mol2, out_dir)
 
     return
@@ -399,7 +363,6 @@ if __name__ == '__main__':
     parser.add_argument('--out_dir', help='Path of output directory', default=Path.cwd())
     parser.add_argument('--random_seed', type=int, default=0, help='Random seed integer value')
     parser.add_argument('--box_size', type=float, default=22.5, help='Length of docking box')
-    parser.add_argument('--prep', type=str2bool, default=True, help='Preparation for partial charge calculation')
 
     parse_args = parser.parse_args()
 
@@ -414,7 +377,6 @@ if __name__ == '__main__':
             center_coord,
             out_dir,
             parse_args.random_seed,
-            parse_args.box_size,
-            parse_args.prep)
+            parse_args.box_size)
     preprocess_for_docking(args)
     sp.run([f'{str(GD_DL_BIN_PATH)}', './gd_dl.in'], check=True, cwd=out_dir)
