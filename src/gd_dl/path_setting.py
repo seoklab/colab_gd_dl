@@ -20,11 +20,6 @@ PREPROCESS_SCRIPT_PATH = HOME_DIR / 'scripts' / 'gd2_preprocess_ligand.py'
 
 CORINA_MAIN_DIR = MAIN_DATA_DIR / 'corina_ligands'
 
-CONDA_BIN = _Path(_os.environ['CONDA_PREFIX']) / 'bin'
-
-OBRMS_PATH = CONDA_BIN / 'obrms'
-OBABEL_PATH = CONDA_BIN / 'obabel'
-
 GD_DL_BIN_PATH: _Path = _ir.files('gd_dl.bin') / 'ligdock'
 GD_DL_DATA_PATH: _Path = _ir.files('gd_dl') / 'data'
 SYBYL_FILE = GD_DL_DATA_PATH / 'sybyl_lcs.types'
