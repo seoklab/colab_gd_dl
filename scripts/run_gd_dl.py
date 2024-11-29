@@ -5,7 +5,6 @@ import torch
 import argparse
 import math
 from typing import List, Tuple, Dict
-
 from gd_dl.utils import str2bool
 from gd_dl.lib_pdb_mol2 import PDB
 from gd_dl.path_setting import (
@@ -120,7 +119,11 @@ def create_gd_dl_in_file(program_dir: Path,
                        grid_n_elem: Tuple[int],
                        grid_width: float,
                        out_dir: Path,
-                       random_seed: int):
+                       random_seed: int,
+                       n_bank: int,
+                       max_opt_cycle: int,
+                       n_seed_cycle: int,
+                       is_print_bank: bool):
     receptor_pdb = process_input_status(contact_lines, out_dir)
     output_file_name = out_dir/'gd_dl.in'
     
@@ -140,6 +143,15 @@ def create_gd_dl_in_file(program_dir: Path,
         f.write('%-21s %s\n'%('first_bank','rand'))
         f.write('%-21s %s\n'%('ligdock_prefix','GalaxyDock'))
         f.write('%-21s %s\n'%('grid_box_cntr',str_center_coord))
+        
+        f.write('%-21s %s %s\n'%('csa_bank', str(n_bank), str(n_bank)))
+        f.write('%-21s %s %s %s %s\n'%('csa_seed', str(n_seed_cycle), str(25), str(max_opt_cycle), str(2)))
+        
+        if is_print_bank:
+            f.write('%-21s %s\n'%('print_bank_evol', 'yes'))
+        else:
+            f.write('%-21s %s\n'%('print_bank_evol', 'no'))
+        
         f.write('%-21s %s\n'%('grid_n_elem',str_grid_n_elem))
         f.write('%-21s %s\n'%('grid_width',str(grid_width)))
         f.write('%-21s %s\n'%('infile_pdb',str(receptor_pdb)))
@@ -261,8 +273,10 @@ def prepare_ligand(ligand_mol2,n_edge):
                 try:
                     group,period,sybyl_features = sybyl_to_lig[tmp_sybyl]
                 except:
-                    print(str(ligand_mol2))
-                    exit()
+                    if tmp_sybyl == 'o':
+                        group,period,sybyl_features = sybyl_to_lig['o.2']
+                    else:
+                        raise Exception(f'atom type error in {str(ligand_mol2)} as {tmp_sybyl}')
                 tmp_node = torch.zeros(N_NODE)
                 tmp_node[0] = 1.0
                 tmp_node[1+group] = 1.0
@@ -333,7 +347,7 @@ def create_static_files(receptor_pdb, ligand_mol2, out_dir):
     return
 
 def preprocess_for_docking(args):
-    protein_pdb, ligand_mol2, center_coord, out_dir, i, box_size = args
+    protein_pdb, ligand_mol2, center_coord, out_dir, i, box_size, n_bank, max_opt_cycle, n_seed_cycle, is_print_bank = args
     program_dir = HOME_DIR/'src'/'gd_dl'
     
     grid_width = 0.375
@@ -352,7 +366,11 @@ def preprocess_for_docking(args):
                                       grid_n_elem=grid_n_elem,
                                       grid_width=grid_width,
                                       out_dir=out_dir,
-                                      random_seed=i)
+                                      random_seed=i,
+                                      n_bank=n_bank,
+                                      max_opt_cycle=max_opt_cycle,
+                                      n_seed_cycle=n_seed_cycle,
+                                      is_print_bank=is_print_bank)
     create_static_files(receptor_pdb, ligand_mol2, out_dir)
 
     return
@@ -365,9 +383,14 @@ if __name__ == '__main__':
     parser.add_argument('-y', type=float, required=True, help='Center coordinate of y')
     parser.add_argument('-z', type=float, required=True, help='Center coordinate of z')
     
+    parser.add_argument('--n_bank', type=int, default=100, help='The number of poses in bank')
+    parser.add_argument('--max_opt_cycle', type=int, default=100, help='The maximum number of cycles')
+    parser.add_argument('--n_seed_cycle', type=int, default=2, help='The number of seed cycles')
     parser.add_argument('--box_size', type=float, default=22.5, help='Length of docking box')
     parser.add_argument('--random_seed', type=int, default=0, help='Random seed integer value')
     parser.add_argument('--out_dir', type=Path, default=Path(os.getcwd()), help='location of output directory')
+    
+    parser.add_argument('--print_bank', type=str2bool, default=False, help='For development')
 
     parse_args = parser.parse_args()
 
@@ -380,6 +403,10 @@ if __name__ == '__main__':
             center_coord,
             out_dir.resolve(),
             parse_args.random_seed,
-            parse_args.box_size)
+            parse_args.box_size,
+            parse_args.n_bank,
+            parse_args.max_opt_cycle,
+            parse_args.i_seed_cycle,
+            parse_args.print_bank)
     preprocess_for_docking(args)
     sp.run([f'{str(GD_DL_BIN_PATH)}', './gd_dl.in'], check=True, cwd=out_dir)

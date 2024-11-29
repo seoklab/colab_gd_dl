@@ -346,8 +346,16 @@ class MOL2:
                 read_bond = True
             elif line.startswith('@<TRIPOS>SUBSTRUCTURE'):
                 read_bond = False
+            elif line.startswith('@<TRIPOS>'):
+                read_atom = False
+                read_bond = False
             elif read_atom:
-                atom_id, _, x_crd, y_crd, z_crd, mol2_type = line.split()[:6]
+                try:
+                    atom_id, _, x_crd, y_crd, z_crd, mol2_type = line.split()[:6]
+                except ValueError:
+                    print(str(self.mol2_fn))
+                    print(line)
+                    exit()
                 if mol2_type[0] == 'H':
                     model.add_hydrogen_index(int(atom_id))
                     if not read_hydrogen:
