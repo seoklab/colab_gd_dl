@@ -1,11 +1,8 @@
-# GalaxyDock-DL (linux only)
+# Beta version of GalaxyDock-DL for specialized use (Original version: git@github.com:seoklab/galaxydock_dl.git)
 GalaxyDock-DL is a protein-ligand docking method which utilizes Conformational Space Annealing(CSA) as a sampling algorithm and deep learning-based scoring functions.
 
 ## Installation Guide (linux only)
-1. Install [Anaconda](https://www.anaconda.com/products/individual) if you have not installed it yet.<br/>
-2. Install [UCSF Chimera](https://www.cgl.ucsf.edu/chimera/download.html) if you have not installed it yet.<br/>
-3. Intallation can be done by running below commands in terminal from main directory location. After git clone, below commands should be run in terminal from main directory location.<br/>
-4. Clone this Git repository<br/>
+1. Clone this Git repository<br/>
 
 ```bash
 $ git clone git@github.com:seoklab/colab_gd_dl.git
@@ -13,13 +10,13 @@ $ git clone git@github.com:seoklab/colab_gd_dl.git
 
 Below commands should be run in terminal from main directory location.<br/>
 
-5. Install torch geometric files. (you can ignore errors) <br/>
+2. Install torch geometric files. (you can ignore errors) <br/>
 ```bash
 $ pip install torch_geometric
 $ pip install torch_scatter
 ```
 
-6. Install source files (gd_dl)<br/>
+3. Install source files (gd_dl)<br/>
 
 ```bash
 $ pip install -e .
