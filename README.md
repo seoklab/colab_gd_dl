@@ -22,8 +22,6 @@ $ pip install torch_scatter
 $ pip install -e .
 ```
 
-When you use GalaxyDock-DL, please make sure you activate the enviroment in terminal first ("conda activate gd_dl").<br/>
-
 ## Usage (linux only)
 Below commands should be run in terminal from main directory location.<br/>
 We recommend checking src/gd_dl/path_setting.py if you want to change path settings.<br/>
