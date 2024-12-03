@@ -406,7 +406,7 @@ if __name__ == '__main__':
             parse_args.box_size,
             parse_args.n_bank,
             parse_args.max_opt_cycle,
-            parse_args.i_seed_cycle,
+            parse_args.n_seed_cycle,
             parse_args.print_bank)
     preprocess_for_docking(args)
     sp.run([f'{str(GD_DL_BIN_PATH)}', './gd_dl.in'], check=True, cwd=out_dir)
